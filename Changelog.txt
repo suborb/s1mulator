@@ -1,0 +1,47 @@
+04-Mar-2007 - 0.5.0 release
+* Switched to Bluechip's Z80 core emulation
+* Rewrote the core control to be better controlled
+* Implemented brom image loading
+* Implemented trap address breakpoint.
+* Implemented memory viewer windows.
+* Close buttons should work now
+* Fixed bug in memory mapper registers
+* Fixed initialization of some variables in memory mapper
+* Everything should be zero'd with memset now
+* Some fixes to the port mapper cleanup
+* Makefile improvements - build tarball and windows zip with 'make dist'
+
+05-Jul-2006 - 0.4.0 release
+* Added memory mapper
+
+30-Jun-2006 - 0.3.1 release
+* Rewrote main.cpp to use wxWidgets methods
+* Added command line options
+
+29-Jun-2006 - 0.3.0 release
+* Switched to wxWidgets for window management
+* Switched to wxGLCanvas for display drawing
+* Backlight now actually works
+* Fixed a bunch of annoying warnings
+* Other general code cleanups
+
+27-Jun-2006 - 0.2.3.1 release (small bugfix release)
+* Fixed/renamed Makefile.mingw for win32 mingw/dev-cpp.
+
+27-Jun-2006 - 0.2.3 release
+* Added Makefile.djgpp for win32 without sdl-config.
+
+27-Jun-2006 - 0.2.2 release
+* Rework of Makefile, should now be more compatible with djgpp,
+  cross-compiling, win32 etc.
+* Added cross compile script
+
+27-Jun-2006 - 0.2.1 release
+* Added backlight classes
+* Added port_pin class 
+* Refactored display class
+
+26-Jun-2006 - 0.2 release
+* New port mapper class
+
+25-Jun-2006 - 0.1 release
