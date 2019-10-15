@@ -13,9 +13,9 @@ private:
 
 class CPUViewer: public wxFrame {
 public:
-    CPUViewer(wxWindow*, Z80CPU * );
+    CPUViewer(wxWindow*, Z80 * );
     virtual void update(void);
 private:
-    Z80CPU *z;
+    Z80 *z;
     wxTextCtrl* text_ctrl_1;
 }; 

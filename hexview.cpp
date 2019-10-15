@@ -1,6 +1,6 @@
 #include "include.h"
 
-#include "z80.h"
+#include "Z80/Z80.h"
 
 #include "hexview.h"
 
@@ -38,7 +38,7 @@ void HexViewer::update(void) {
 	}
 }
 
-CPUViewer::CPUViewer(wxWindow* parent, Z80CPU *zz)
+CPUViewer::CPUViewer(wxWindow* parent, Z80 *zz)
 : wxFrame(parent, -1,  _("CPU"), wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX | wxCAPTION | wxCLIP_CHILDREN)
 {
 	z = zz;
@@ -74,25 +74,25 @@ void CPUViewer::update(void) {
 
 	text_ctrl_1->Clear();
 	s.Printf(_("PC: 0x%04X (%5d)  SP: 0x%04X (%5d)  \n"), 
-		z->rp[PC], z->rp[PC], z->rp[SP], z->rp[SP]);
+		z->PC.W, z->PC.W, z->SP.W, z->SP.W);
 	text_ctrl_1->AppendText(s);
 	s.Printf(_("BC: 0x%04X (%5d)   B: 0x%02X (%3d)   C: 0x%02X (%3d)\n"), 
-		z->rp[BC], z->rp[BC], z->r[B], z->r[B], z->r[C], z->r[C]);
+		z->BC.W, z->BC.W, z->BC.B.h, z->BC.B.h, z->BC.B.l, z->BC.B.l);
 	text_ctrl_1->AppendText(s);
 	s.Printf(_("DE: 0x%04X (%5d)   D: 0x%02X (%3d)   E: 0x%02X (%3d)\n"), 
-		z->rp[DE], z->rp[DE], z->r[D], z->r[D], z->r[E], z->r[E]);
+		z->DE.W, z->DE.W, z->DE.B.h, z->DE.B.h, z->DE.B.l, z->DE.B.l);
 	text_ctrl_1->AppendText(s);
 	s.Printf(_("HL: 0x%04X (%5d)   H: 0x%02X (%3d)   L: 0x%02X (%3d)\n"), 
-		z->rp[HL], z->rp[HL], z->r[H], z->r[H], z->r[L], z->r[L]);
+		z->HL.W, z->HL.W, z->HL.B.h, z->HL.B.h, z->HL.B.l, z->HL.B.l);
 	text_ctrl_1->AppendText(s);
 	s.Printf(_("AF: 0x%04X (%5d)   F: 0x%02X (%3d)   A: 0x%02X (%3d)\n"), 
-		z->rp[AF], z->rp[AF], z->r[F], z->r[F], z->r[A], z->r[A]);
+		z->AF.W, z->AF.W, z->AF.B.l, z->AF.B.l, z->AF.B.h, z->AF.B.h);
 	text_ctrl_1->AppendText(s);
 	s.Printf(_("IX: 0x%04X (%5d) IXh: 0x%02X (%3d) IXl: 0x%02X (%3d)\n"), 
-		z->rp[IX], z->rp[IX], z->r[IXh], z->r[IXh], z->r[IXl], z->r[IXl]);
+		z->IX.W, z->IX.W, z->IX.B.h, z->IX.B.h, z->IX.B.l, z->IX.B.l);
 	text_ctrl_1->AppendText(s);
 	s.Printf(_("IY: 0x%04X (%5d) IYh: 0x%02X (%3d) IYl: 0x%02X (%3d)\n"), 
-		z->rp[IY], z->rp[IY], z->r[IYh], z->r[IYh], z->r[IYl], z->r[IYl]);
+		z->IY.W, z->IY.W, z->IY.B.h, z->IY.B.h, z->IY.B.l, z->IY.B.l);
 	text_ctrl_1->AppendText(s);
 
 	// TODO: flags and other stuff

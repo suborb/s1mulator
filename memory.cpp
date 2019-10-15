@@ -22,10 +22,10 @@ memory_mapper::memory_mapper(port_mapper *pm) {
 	trom = new byte[0x5400];
 
 	srand(time(0));
-	memrset(zram1, 0, 0x4000);
-        memrset(zram2, 0, 0x1000);
-        memrset(brom, 0, 0x2000);
-        memrset(trom, 0, 0x5400);
+	// memrset(zram1, 0, 0x4000);
+    //     memrset(zram2, 0, 0x1000);
+    //     memrset(brom, 0, 0x2000);
+    //     memrset(trom, 0, 0x5400);
 
 	pm->register_listener(this, 0x01);
 	pm->register_listener(this, 0x02);

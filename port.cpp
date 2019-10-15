@@ -11,6 +11,7 @@ void port_listener::out(byte addr, byte value) {};
 port_mapper::port_mapper() {
 	ports = new byte[0x100];
 	memset(ports, 0, 0x100);
+    ports[0xee] = 0xff;         //GPOA
 	port_bindings = NULL;
 }
 
@@ -26,11 +27,14 @@ port_mapper::~port_mapper() {
 }
 
 byte port_mapper::in(byte addr) {
+ //   printf("In (%02x) -> %02x\n",addr, ports[addr]);
 	return ports[addr];
 }
 
 void port_mapper::out(byte addr, byte value) {
 	port_list_item *tmp = port_bindings;
+
+	//printf("Out %02x,%02x\n",addr,value);
 
 	//io registers
 	if(addr == 0xF2) gpio_b_output = value;

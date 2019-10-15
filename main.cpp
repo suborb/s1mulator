@@ -8,7 +8,7 @@
 #include "wx/tokenzr.h"
 
 
-#include "z80.h"
+#include "Z80/Z80.h"
 
 
 #include "runctrl.h"
@@ -23,16 +23,21 @@ backlight *b;
 nand *n;
 dma_controller *dma1;
 dma_controller *dma2;
-
-Z80CPU z;
+bool core_running = true;
+Z80 z;
 
 dword init_exec = 0;
 long trap_addr = -1;
 
+
+void PatchZ80(register Z80 *R)
+{
+}
+
 /****************************************************************************/
 /* Input a byte from given I/O port                                         */
 /****************************************************************************/
-byte Z80_In (dword dPort) {
+byte InZ80 (register word dPort) {
 	byte Port = dPort&0xff;
 //      printf("in: %02x, %02x\n", Port, ports->read(Port));
         return ports->in(Port);
@@ -41,7 +46,7 @@ byte Z80_In (dword dPort) {
 /****************************************************************************/
 /* Output a byte to given I/O port                                          */
 /****************************************************************************/
-void Z80_Out (dword dPort,byte Value){
+void OutZ80 (register word dPort,register byte Value){
 	byte Port = dPort&0xff;
 //      printf("out: %02x, %02x\n", Port, Value);
         ports->out(Port, Value);
@@ -50,7 +55,7 @@ void Z80_Out (dword dPort,byte Value){
 /****************************************************************************/
 /* Read a byte from given memory location                                   */
 /****************************************************************************/
-byte Z80_RDMEM(dword Addr){
+byte RdZ80(register word Addr){
 //	printf("read %04d\n", Addr);
         return memory->read(Addr);
 }
@@ -58,7 +63,7 @@ byte Z80_RDMEM(dword Addr){
 /****************************************************************************/
 /* Write a byte to given memory location                                    */
 /****************************************************************************/
-void Z80_WRMEM(dword Addr,byte Value){
+void WrZ80(register word Addr,register byte Value){
         memory->write(Addr, Value);
         return;
 }
@@ -74,7 +79,6 @@ private:
 	CPUViewer *cpuframe;
 	wxTimer *runtimer;
 	void load_bin(wxFileName, long);
-	bool core_running;
 public:
 	// wx handlers
 	virtual bool OnInit();
@@ -208,9 +212,9 @@ void s1mulator::core_step  (wxCommandEvent& WXUNUSED(event)) {
 		return;
 	}
 
-	z80(&z, zEXEC);
+    ExecZ80(&z, 5);
 
-	z80_debug(&z);
+	//z80_debug(&z);
 
 
 	if(dispframe) dispframe->redraw();
@@ -232,17 +236,18 @@ void s1mulator::core_start   (wxCommandEvent& WXUNUSED(event)) {
 
 void s1mulator::core_run   (wxTimerEvent& WXUNUSED(event)) {
         int n,m;
-	if(!core_running) return; 
+	if(!core_running) { DebugZ80(&z); return;  }
         for(n=0;n<10;n++) {
                 for(m=0;m<100;m++) {
-			if(z.rp[PC] == trap_addr) {
+			//printf("PC=%04x\r",z.PC.W);
+			if(z.PC.W == trap_addr) {
 				runtimer->Stop();
 				// in case the timer already fired.
 				core_running = false;
 				printf("Trap address reached.\n");
 				return;
 			}
-                        z80(&z, zEXEC);
+            ExecZ80(&z, 5);
 		}
                 if(dispframe) dispframe->redraw();
         }
@@ -352,8 +357,10 @@ bool s1mulator::OnInit() {
 		return false;
 
 	// setup default display if not done.
+    // display::display(int c, int p, byte port, byte ppin, bool pinv, byte mpin, bool minv, port_mapper *pm) {
+
 	if(!b) b = new backlight(0xee, 0x01, true, 0xee, 0x02, false, 0xee, 0x04, false, ports);
-	if(!d) d = new display(140, 6, 0xf4, 0x01, false, 0x04, false, ports);
+	if(!d) d = new display(140, 6, 0xee, 0x04, false, 0x01, false, ports);
 	if(!n) n = new nand(ports);
 	
 	memory->register_ce3(d);
@@ -368,15 +375,11 @@ bool s1mulator::OnInit() {
 	b->log_port = 1;
 	memory->log_port = 1;
 
-	z.peek8 = Z80_RDMEM;
-	z.poke8 = Z80_WRMEM;
-	z.in8 = Z80_In;
-	z.out8 = Z80_Out;
 
-	z80(&z, zRESET);
+    ResetZ80(&z);
 
-	z.rp[PC] = init_exec;
-        z.rp[SP] = 0x3FFF;
+	z.PC.W = init_exec;
+    z.SP.W = 0x3FFF;
 	dispframe = new DisplayFrame(runctrl, d, b);	
 
 	runtimer = new wxTimer(this, -1);
