@@ -56,7 +56,6 @@ display::~display() {
 void display::write(dword addr, byte d) {
     //printf("Display write %04x, %02x set =%d\n",addr,d,mode->get());
 	if(mode->get()) {
-		//printf("write: %d, %d, %d\n", cursor_col, cursor_page);
 		fb[cursor_page+(fb_p*cursor_col)] = d;
 		cursor_col = (cursor_col+1)%cols;
 		dirty = TRUE;
@@ -75,7 +74,7 @@ void display::write(dword addr, byte d) {
 			dirty = TRUE;
 			break;
 		default:
-			if(d&0xC0 == 0x40)  start_line = d&0x3F;
+			if(d&0xC0 == 0x40) start_line = d&0x3F;
 			else switch(d&0xF0) {
 			case 0xB0:
 				cursor_page = (d&0x0f)%pages;
@@ -93,7 +92,6 @@ void display::write(dword addr, byte d) {
 }
 
 byte display::read(dword addr) {
-	printf("%d, %d", cursor_col, cursor_page);
 	if(mode->get()) return fb[cursor_page+(fb_p*cursor_col)];
 	else return 1; // TODO: return status properly
 }
@@ -112,13 +110,14 @@ void display::maketex(void) {
                 glPixelMapfv(GL_PIXEL_MAP_I_TO_G, 2, index_map);
                 glPixelMapfv(GL_PIXEL_MAP_I_TO_B, 2, index_map);
                 glPixelMapfv(GL_PIXEL_MAP_I_TO_A, 2, index_map);
+
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fb_p*8, fb_c, 0, GL_COLOR_INDEX, GL_BITMAP, fb);
                 dirty = FALSE;
         }
 }
 
 void DisplayFrame::redraw(void) {
-        // fill canvas with backlight colour
+        // fill  = with backlight colour
         // copy fb -> window
         // flip canvas
         canvas->SetCurrent();
@@ -126,7 +125,7 @@ void DisplayFrame::redraw(void) {
         glMatrixMode(GL_PROJECTION); glLoadIdentity();
         glMatrixMode(GL_MODELVIEW); glLoadIdentity();
         glViewport(0, 0, (GLint)(d->cols*2), (GLint)(d->pages*8*2));
-        glOrtho(0, d->cols, 0, d->pages*8, -1, 1);
+        glOrtho(0,d->cols, d->pages*8, 0, -1, 1);
 
 
         // opengl init
